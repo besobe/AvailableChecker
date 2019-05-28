@@ -1,22 +1,18 @@
 package de.codersgen.available_checker;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.SwingConstants;
-import javax.swing.JTextArea;
 
 public class GUI extends JFrame implements Runnable
 {
 
-    private JPanel    contentPane;
-    private JTextArea textArea;
+    private JPanel       contentPane;
+    private HostTemplate hostGoogle;
+    private HostTemplate hostYoutube;
+    private HostTemplate hostAmazon;
 
     /*
      * Create the frame.
@@ -27,14 +23,21 @@ public class GUI extends JFrame implements Runnable
         setBounds(100, 100, 450, 300);
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-        setContentPane(contentPane);
         contentPane.setLayout(null);
 
-        textArea = new JTextArea();
-        textArea.setWrapStyleWord(true);
-        textArea.setLineWrap(true);
-        textArea.setBounds(10, 11, 414, 239);
-        contentPane.add(textArea);
+        setContentPane(contentPane);
+
+        hostGoogle = new HostTemplate();
+        hostGoogle.setBounds(10, 11, 214, 36);
+        contentPane.add(hostGoogle);
+
+        hostYoutube = new HostTemplate();
+        hostYoutube.setBounds(10, 58, 214, 36);
+        contentPane.add(hostYoutube);
+
+        hostAmazon = new HostTemplate();
+        hostAmazon.setBounds(10, 105, 214, 36);
+        contentPane.add(hostAmazon);
         new Thread(this).start();
     }
 
@@ -53,18 +56,58 @@ public class GUI extends JFrame implements Runnable
             if (address.isReachable(10 * 3000))
             {
                 ping = (System.currentTimeMillis() - ping);
-                textArea.setText(host + " is reachable (" + ping + "ms)\n" + textArea.getText());
-                System.out.println(host + " is reachable (" + ping + "ms)");
+                if (host.equalsIgnoreCase(Config.getTestList().get(0)))
+                {
+                    hostGoogle.setReachable(true);
+                    hostGoogle.setHostname(host, String.valueOf(ping));
+                }
+                if (host.equalsIgnoreCase(Config.getTestList().get(1)))
+                {
+                    hostYoutube.setReachable(true);
+                    hostYoutube.setHostname(host, String.valueOf(ping));
+                }
+                if (host.equalsIgnoreCase(Config.getTestList().get(2)))
+                {
+                    hostAmazon.setReachable(true);
+                    hostAmazon.setHostname(host, String.valueOf(ping));
+                }
             }
             else
             {
-                textArea.setText(host + " is not reachable (timeout)\n" + textArea.getText());
-                System.out.println(host + " is not reachable (timeout)");
+                if (host.equalsIgnoreCase(Config.getTestList().get(0)))
+                {
+                    hostGoogle.setReachable(false);
+                    hostGoogle.setHostname(host);
+                }
+                if (host.equalsIgnoreCase(Config.getTestList().get(1)))
+                {
+                    hostYoutube.setReachable(false);
+                    hostYoutube.setHostname(host);
+                }
+                if (host.equalsIgnoreCase(Config.getTestList().get(2)))
+                {
+                    hostAmazon.setReachable(false);
+                    hostAmazon.setHostname(host);
+                }
             }
         }
         catch (Exception e)
         {
-            e.printStackTrace();
+            if (host.equalsIgnoreCase(Config.getTestList().get(0)))
+            {
+                hostGoogle.setReachable(false);
+                hostGoogle.setHostname(host);
+            }
+            if (host.equalsIgnoreCase(Config.getTestList().get(1)))
+            {
+                hostYoutube.setReachable(false);
+                hostYoutube.setHostname(host);
+            }
+            if (host.equalsIgnoreCase(Config.getTestList().get(2)))
+            {
+                hostAmazon.setReachable(false);
+                hostAmazon.setHostname(host);
+            }
         }
     }
 
@@ -77,14 +120,13 @@ public class GUI extends JFrame implements Runnable
             check();
             try
             {
-                Thread.sleep(300);
+                Thread.sleep(3 * 1000);
             }
             catch (InterruptedException e)
             {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            textArea.setText("");
         }
     }
 }

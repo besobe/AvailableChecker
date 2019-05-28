@@ -10,7 +10,7 @@ public class Config
     {
         testURL.add("www.google.com");
         testURL.add("www.youtube.com");
-        testURL.add("www.amazon.de");
+        testURL.add("www.amazon.dasdasdasde");
     }
     
     public static ArrayList<String> getTestList()

@@ -12,7 +12,6 @@ public class Application
             {
                 try
                 {
-                    Config config = new Config();
                     GUI frame = new GUI();
                     frame.setVisible(true);
                 }

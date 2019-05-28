@@ -1,6 +1,8 @@
 package de.codersgen.available_checker;
 
-import java.net.InetAddress;
+import java.awt.GraphicsEnvironment;
+import java.awt.MouseInfo;
+import java.awt.Rectangle;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -8,119 +10,86 @@ import javax.swing.border.EmptyBorder;
 
 public class GUI extends JFrame implements Runnable
 {
+    private boolean isRunning = true;
 
     private JPanel       contentPane;
     private HostTemplate hostGoogle;
     private HostTemplate hostYoutube;
     private HostTemplate hostAmazon;
 
-    /*
-     * Create the frame.
-     */
+    private final int WIDTH  = 236;
+    private final int HEIGHT = 150;
+
+    private Rectangle screenSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+
+    // Setup GUI
     public GUI()
     {
+
+        setType(Type.UTILITY);
+        setUndecorated(true);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 450, 300);
+        setBounds((int) screenSize.width - WIDTH, (int) screenSize.height - HEIGHT, WIDTH, HEIGHT);
+        setAlwaysOnTop(true);
+        setOpacity(.75f);
+
         contentPane = new JPanel();
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(null);
 
-        setContentPane(contentPane);
-
-        hostGoogle = new HostTemplate();
+        // Setup first HostTemplate (Google)
+        hostGoogle = new HostTemplate(Config.FIRST_URL);
         hostGoogle.setBounds(10, 11, 214, 36);
+        new Thread(hostGoogle).start();
         contentPane.add(hostGoogle);
 
-        hostYoutube = new HostTemplate();
+        // Setup second HostTemplate (Youtube)
+        hostYoutube = new HostTemplate(Config.SECOND_URL);
         hostYoutube.setBounds(10, 58, 214, 36);
+        new Thread(hostYoutube).start();
         contentPane.add(hostYoutube);
 
-        hostAmazon = new HostTemplate();
+        // Setup third HostTemplate (Amazon)
+        hostAmazon = new HostTemplate(Config.THIRD_URL);
         hostAmazon.setBounds(10, 105, 214, 36);
+        new Thread(hostAmazon).start();
         contentPane.add(hostAmazon);
+
+        setContentPane(contentPane);
+        
+        // Start the "Thread"
         new Thread(this).start();
     }
 
-    public void check()
+    // Check if mouse if hover the GUI
+    public boolean isHover()
     {
-        System.out.println("CHECK");
-        Config.getTestList().forEach((host) -> isValid(host));
+        if (MouseInfo.getPointerInfo().getLocation().getX() >= getLocation().getX()
+                && MouseInfo.getPointerInfo().getLocation().getY() >= getLocation().getY())
+            return true;
+        return false;
     }
 
-    public void isValid(String host)
+    // Kill the thread
+    public void kill()
     {
-        try
-        {
-            InetAddress address = InetAddress.getByName(host);
-            long ping = System.currentTimeMillis();
-            if (address.isReachable(10 * 3000))
-            {
-                ping = (System.currentTimeMillis() - ping);
-                if (host.equalsIgnoreCase(Config.getTestList().get(0)))
-                {
-                    hostGoogle.setReachable(true);
-                    hostGoogle.setHostname(host, String.valueOf(ping));
-                }
-                if (host.equalsIgnoreCase(Config.getTestList().get(1)))
-                {
-                    hostYoutube.setReachable(true);
-                    hostYoutube.setHostname(host, String.valueOf(ping));
-                }
-                if (host.equalsIgnoreCase(Config.getTestList().get(2)))
-                {
-                    hostAmazon.setReachable(true);
-                    hostAmazon.setHostname(host, String.valueOf(ping));
-                }
-            }
-            else
-            {
-                if (host.equalsIgnoreCase(Config.getTestList().get(0)))
-                {
-                    hostGoogle.setReachable(false);
-                    hostGoogle.setHostname(host);
-                }
-                if (host.equalsIgnoreCase(Config.getTestList().get(1)))
-                {
-                    hostYoutube.setReachable(false);
-                    hostYoutube.setHostname(host);
-                }
-                if (host.equalsIgnoreCase(Config.getTestList().get(2)))
-                {
-                    hostAmazon.setReachable(false);
-                    hostAmazon.setHostname(host);
-                }
-            }
-        }
-        catch (Exception e)
-        {
-            if (host.equalsIgnoreCase(Config.getTestList().get(0)))
-            {
-                hostGoogle.setReachable(false);
-                hostGoogle.setHostname(host);
-            }
-            if (host.equalsIgnoreCase(Config.getTestList().get(1)))
-            {
-                hostYoutube.setReachable(false);
-                hostYoutube.setHostname(host);
-            }
-            if (host.equalsIgnoreCase(Config.getTestList().get(2)))
-            {
-                hostAmazon.setReachable(false);
-                hostAmazon.setHostname(host);
-            }
-        }
+        isRunning = false;
     }
 
+    // Thread run method
     @Override
     public void run()
     {
-        boolean isRunning = true;
         while (isRunning)
         {
-            check();
+            if (isHover())
+                setVisible(false);
+            else
+                setVisible(true);
             try
             {
-                Thread.sleep(3 * 1000);
+                Thread.sleep(100);
             }
             catch (InterruptedException e)
             {

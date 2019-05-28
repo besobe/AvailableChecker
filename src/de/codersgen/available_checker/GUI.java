@@ -12,25 +12,20 @@ public class GUI extends JFrame implements Runnable
 {
     private boolean isRunning = true;
 
-    private JPanel       contentPane;
-    private HostTemplate hostGoogle;
-    private HostTemplate hostYoutube;
-    private HostTemplate hostAmazon;
+    private JPanel contentPane;
 
-    private final int WIDTH  = 236;
-    private final int HEIGHT = 150;
+    private int windowWidth  = 236;
+    private int windowHeight = 150;
 
     private Rectangle screenSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 
     // Setup GUI
     public GUI()
     {
-
         setType(Type.UTILITY);
         setUndecorated(true);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds((int) screenSize.width - WIDTH, (int) screenSize.height - HEIGHT, WIDTH, HEIGHT);
         setAlwaysOnTop(true);
         setOpacity(.75f);
 
@@ -38,26 +33,20 @@ public class GUI extends JFrame implements Runnable
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         contentPane.setLayout(null);
 
-        // Setup first HostTemplate (Google)
-        hostGoogle = new HostTemplate(Config.FIRST_URL);
-        hostGoogle.setBounds(10, 11, 214, 36);
-        new Thread(hostGoogle).start();
-        contentPane.add(hostGoogle);
-
-        // Setup second HostTemplate (Youtube)
-        hostYoutube = new HostTemplate(Config.SECOND_URL);
-        hostYoutube.setBounds(10, 58, 214, 36);
-        new Thread(hostYoutube).start();
-        contentPane.add(hostYoutube);
-
-        // Setup third HostTemplate (Amazon)
-        hostAmazon = new HostTemplate(Config.THIRD_URL);
-        hostAmazon.setBounds(10, 105, 214, 36);
-        new Thread(hostAmazon).start();
-        contentPane.add(hostAmazon);
+        // Set window height correct
+        windowHeight = Config.MARGIN + (Config.URL_LIST.length * Config.TEMPLATE_HEIGHT);
+        setBounds((int) screenSize.width - windowWidth, (int) screenSize.height - windowHeight, windowWidth, windowHeight);
+        // Add all hosts that a found in the config file
+        for (int i = 0; i < Config.URL_LIST.length; i++)
+        {
+            HostTemplate temp = new HostTemplate(Config.URL_LIST[i][0], Config.URL_LIST[i][1]);
+            temp.setBounds(10, Config.MARGIN + (i * Config.TEMPLATE_HEIGHT), 214, 36);
+            new Thread(temp).start();
+            contentPane.add(temp);
+        }
 
         setContentPane(contentPane);
-        
+
         // Start the "Thread"
         new Thread(this).start();
     }

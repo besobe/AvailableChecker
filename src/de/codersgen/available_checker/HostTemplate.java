@@ -11,14 +11,16 @@ import javax.swing.border.EtchedBorder;
 public class HostTemplate extends JPanel implements Runnable
 {
     // Declare variables
+    private String  sURL;
     private String  sHostname;
     private JLabel  lblHostname;
     private JLabel  lblReachable;
     private boolean isRunning = true;
 
-    public HostTemplate(String hostname)
+    public HostTemplate(String url, String hostname)
     {
-        // Setup Hostname
+        // Setup URL and hostname
+        sURL = url;
         sHostname = hostname;
 
         // Setup Default Values
@@ -110,7 +112,7 @@ public class HostTemplate extends JPanel implements Runnable
     // Check connection and ping
     public void checkConnection()
     {
-        if (sHostname == null)
+        if (sURL == null || sHostname == null)
         {
             kill();
             return;
@@ -118,7 +120,7 @@ public class HostTemplate extends JPanel implements Runnable
 
         try
         {
-            InetAddress address = InetAddress.getByName(sHostname);
+            InetAddress address = InetAddress.getByName(sURL);
             long ping = System.currentTimeMillis();
             if (address.isReachable(Config.TIMEOUT))
             {

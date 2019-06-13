@@ -1,4 +1,4 @@
-package de.codersgen.available_checker;
+package de.codersgen.available_checker.templates;
 
 import javax.swing.JPanel;
 import javax.swing.JLabel;
@@ -7,6 +7,8 @@ import java.net.InetAddress;
 
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
+
+import de.codersgen.available_checker.Config;
 
 public class HostTemplate extends JPanel implements Runnable
 {

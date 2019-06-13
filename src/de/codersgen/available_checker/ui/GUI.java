@@ -1,4 +1,4 @@
-package de.codersgen.available_checker;
+package de.codersgen.available_checker.ui;
 
 import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
@@ -7,6 +7,9 @@ import java.awt.Rectangle;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import de.codersgen.available_checker.Config;
+import de.codersgen.available_checker.templates.HostTemplate;
 
 public class GUI extends JFrame implements Runnable
 {
